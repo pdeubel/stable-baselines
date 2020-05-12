@@ -40,3 +40,7 @@ src
 .cache
 
 MUJOCO_LOG.TXT
+
+*PPO*
+*TRPO*
+*log-rank*
