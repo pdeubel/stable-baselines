@@ -43,8 +43,17 @@ def main():
 
     comm = MPI.COMM_WORLD
     rank = comm.Get_rank()
+
+    parser = mujoco_arg_parser()
+    parser.add_argument('--algorithm', help="The algorithm which shall be used, TRPO or PPO", type=str, default="TRPO")
+    args = parser.parse_args()
+
+    algorithm = args.algorithm
+
     if rank == 0:
-        save_dir = [os.path.join(main_dir, time.strftime('%Y_%m_%d-%Hh_%Mm_%Ss', time.localtime(time.time())))]
+        save_dir = [
+            os.path.join(main_dir, time.strftime('%Y_%m_%d-%Hh_%Mm_%Ss', time.localtime(time.time())) + "-" + algorithm)
+        ]
     else:
         save_dir = None
 
@@ -53,14 +62,10 @@ def main():
     # Unpack list
     save_dir = save_dir[0]
 
-    parser = mujoco_arg_parser()
-    parser.add_argument('--algorithm', help="The algorithm which shall be used, TRPO or PPO", type=str, default="TRPO")
-    args = parser.parse_args()
-
     model_file = os.path.join(save_dir, "model")
     log_dir = os.path.join(save_dir, "log")
 
-    train(args.env, num_timesteps=args.num_timesteps, seed=args.seed, algorithm=args.algorithm,
+    train(args.env, num_timesteps=args.num_timesteps, seed=args.seed, algorithm=algorithm,
           model_save_file=model_file, log_dir=log_dir)
 
 
